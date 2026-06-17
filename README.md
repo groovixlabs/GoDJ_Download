@@ -1,258 +1,250 @@
-# Beatmatching in GoDJ
+# GoDJ — User Manual
 
-How tempo, sync, and the tempo-return tools work together, and the intended
-workflow for a full A → B transition.
+GoDJ is a two‑deck DJ application: load tracks into the library, drop them onto
+Deck A or Deck B, beat‑match them, and mix from one to the other. It analyses
+every track for tempo and beat positions so it can sync the decks, quantise
+loops and cues, and automate transitions.
 
-## The pieces
+This manual starts with a hands‑on tutorial, then explains the everyday
+workflow, and finishes with a reference to every control. For the deep
+mechanics of sync and the tempo handover, see **[beatmatch.md](beatmatch.md)**.
 
-**Beatgrid.** Every track loaded onto a deck (or dropped into the playlist) is
-analyzed in the background: BPM plus the position of the first beat, as a
-fixed-tempo grid. Everything beat-related — sync, quantize, beat loops, beat
-jumps, the beat ticks in the stacked waveform view — derives from this grid.
-If the grid looks misaligned against the audio, fix it with the grid
-correction buttons beside the stacked view (next section); corrections are
-saved and survive reloads.
+There are **no menus** — every control is on the main screen, and the **bottom
+bar shows help text** for whatever your mouse is hovering over.
 
-**Grid correction buttons** (beside the stacked view, one tinted 2×2 block
-per deck):
+---
 
-- `<BEAT` / `BEAT>` slide all the beat markers earlier/later relative to
-  the waveform, 10 ms per step (hold to repeat) — watch the zoomed view and
-  put a tick right on the kick. **Shift-click** jumps the grid a whole beat
-  instead: no tick visibly moves, but the *downbeat* re-anchors, fixing
-  bar lines that land mid-phrase (e.g. after leading silence).
-- `-` / `+` tighten/widen the grid *spacing* by trimming the analyzed BPM
-  (0.05 BPM per step, repeats while held). Use this when ticks line up at
-  the playhead but drift apart further away — the analyzed tempo is
-  slightly off.
+## 1. Quick tutorial — your first mix
 
-The buttons are enabled only while their deck is **paused** — grid edits on
-a playing deck would audibly jerk loops and sync. All grid edits persist
-with the track.
+1. **Add music.** Drag a few audio files (or a folder) onto the **playlist** at
+   the bottom of the window. Each track is analysed in the background; its BPM
+   appears in the list when it's ready.
+2. **Load the decks.** In a track's row, click **A** to load it onto the left
+   deck and another track's **B** to load the right deck. (Decks load *only*
+   from these buttons.)
+3. **Start Deck A.** Press the ▶ (play) button on Deck A. Bring its **VOL**
+   fader up if needed.
+4. **Prepare Deck B.** On Deck B, set a cue point and press its **SYNC** button
+   (just below the **Q** button). Deck B's tempo and beats now lock to Deck A.
+   Start Deck B and check the **sliding waveform** in the middle — the beat
+   ticks of both lanes should line up.
+5. **Set the blend direction.** The **A>B / A<B** button (next to **FADE**)
+   shows which way the mix will go. Pressing Deck B's SYNC sets it to **A>B**
+   (fade Deck A out, Deck B in) automatically.
+6. **Transition.** Press **FADE**. GoDJ blends the two decks on their channel
+   faders over the chosen number of bars (equal‑power, so the level stays
+   steady), starting on the next bar line. When it lands, Deck A is out and the
+   sync latch releases.
 
-Bar lines in the sliding view are numbered (counting from the downbeat
-anchor) and coloured by phrase position — every 4th bar amber, 8th coral,
-16th purple, 32nd blue — so you can see phrase boundaries coming and check
-that both decks' phrases line up, not just their beats.
+That's a full mix. Everything below is detail and refinement.
 
-**Tempo fader.** Each deck has a vertical TEMPO fader, ±16%, with its current
-value shown below it. The BPM read-out always shows the *effective* BPM
-(track BPM adjusted by the fader). Double-click the fader or use RESET to
-return to 0%. Note: GoDJ has no keylock, so tempo changes also change pitch —
-which is exactly why the tools below move tempo *slowly*.
+---
 
-**Nudge.** `< NUDGE` / `NUDGE >` are momentary pitch bends (hold to run ~4%
-slow/fast, release to return). Use them for small phase corrections by ear
-when mixing manually; they don't change the set tempo, and the position
-shift gained while held sticks. While a sync latch is engaged the
-*follower's* nudge buttons are greyed out — the lock holds phase itself and
-would steer any nudge straight back.
+## 2. The screen at a glance
 
-**Step.** `< STEP` / `STEP >` move the playhead itself by 10 ms per press,
-or 2 ms with shift held (auto-repeats while held) — the paused-jog-wheel
-scrub. Use them to creep onto an exact transient before setting a hot cue:
-coarse steps to get close, shift-steps to land on the kick. Unlike NUDGE
-they *seek*, so stepping while playing makes a tiny skip.
+```
+ ┌───────────────┬───────────────────────────┬───────────────┐
+ │   DECK A      │   sliding waveforms (both  │   DECK B      │
+ │   (teal)      │   decks) + zoom + grid     │   (orange)    │
+ │               │   edit buttons             │               │
+ ├───────────────┴───────────────────────────┴───────────────┤
+ │   MIXER (centre): GAIN · HI · MID · LOW · COLOR per deck   │
+ ├───────────────────────────────────────────────────────────┤
+ │   TRANSITION ROW: FADE bars · TEMPO TRANSITION · AUTOFADE  │
+ │   mode · FADE · A>B · ALIGN · LOW MID HI                   │
+ ├───────────────────────────────────────────────────────────┤
+ │   PLAYLIST (library)                                       │
+ ├───────────────────────────────────────────────────────────┤
+ │   help/info bar            [ MIDI ]   [ AUDIO ]           │
+ └───────────────────────────────────────────────────────────┘
+```
 
-**Step under sync lock.** On the latched *follower* (with both decks
-running), STEP changes meaning: instead of seeking — which the lock would
-fight — it nudges the lock's *target alignment*, and the lock gently slips
-the audio into the new position. This is the live fix for "sync is engaged
-but the kicks still flam": tap STEP until they merge. The correction is a
-session-only offset inside the lock — **beat markers never move and
-nothing is saved**; it evaporates when the latch is released. If the flam
-turns out to be a genuine grid error you want fixed permanently, pause and
-use the `<BEAT` / `BEAT>` buttons — grid edits belong to them alone.
-Prefer single taps when correcting; holding injects offset faster than the
-lock's gentle trim can follow, and it will eventually jump to catch up.
+- **Deck A** is teal and on the left; **Deck B** is orange and on the right.
+- The **mixer** sits between them.
+- The **sliding (stacked) waveform** at the top shows both decks scrolling past
+  a fixed centre playhead, so you can see beat alignment at a glance.
 
-**Sync latch.** Each deck has a **SYNC** button in its pad area, just below the
-**Q** button. Pressing a deck's SYNC engages it as the follower:
+---
 
-- deck A's **SYNC** — A follows B (B is the master)
-- deck B's **SYNC** — B follows A (A is the master)
+## 3. Workflow
 
-They are mutually exclusive, and each lights in its own deck's colour. (The
-handover *direction* is chosen separately by the `A>B`/`A<B` toggle next to
-FADE — sync and direction are decoupled.) Engaging one does a one-shot sync first — the follower's tempo fader moves to
-match the master's effective BPM, and playback jumps (at most half a beat) to
-the matching beat phase. While the latch stays lit, the follower keeps
-tracking the master: tempo fader changes on the master are mirrored, and beat
-phase is held with tiny inaudible rate trims (±1.5% max). That phase hold runs
-on the **audio thread**, per block, off the exact sample position — the master
-publishes its beat phase each block and the follower trims its resampling ratio
-to hold it, so the lock is sample-accurate rather than chasing a stale reading
-off a GUI timer. (A 20 Hz timer still does the slower work behind it: matching
-tempo and the big-jump snap.) If the follower ever drifts badly (you seeked, or
-restarted playback), it snaps back into phase instead of chasing. Each button is
-tinted with its *master* deck's colour.
+### Building the library
+Drop files or folders onto the playlist. Tracks are analysed on a background
+thread (BPM, beat grid, a colour waveform, and rough phrase sections). Use the
+playlist's **NEW / LOAD / SAVE** buttons to start a fresh list or swap it with a
+saved one. Tracks shown in **amber** were analysed by an older version — re‑run
+analysis on them when convenient.
 
-The lock is **pure grid phase**, no continuous audio
-cross-correlation runs while it's latched (that only made the follower hunt and
-the beat markers drift). It locks the actual *kicks* because the analyzer anchors
-each grid line onto the kick at sample resolution (see "Kick-anchored grids"
-below), so once the grids are phase-matched the kicks sit on top of each other.
+### Loading and cueing a deck
+Click a row's **A** or **B** to load that deck. Find your start point with the
+waveform (click to seek) and the **STEP** buttons, then set the main cue with
+**CUE** while paused. Quantised hot cues (with **Q** on) snap to the beat.
 
-**Kick-anchored grids.** Grid sync only locks the kicks if the grid lines sit on
-the kicks. After detecting a coarse BPM and phase, the analyzer refines both
-against the actual kicks: it low-passes the audio to 150 Hz, builds a sample-rate
-kick-onset signal, snaps the first beat onto the kick, then **least-squares-fits
-a continuous BPM and anchor over every strong kick onset in the track**  — so the 
-grid stays on the kicks from start to finish, instead of being quantized to the 
-coarse comb's 0.02 BPM and slowly walking off over a few minutes. Because both 
-decks anchor to the same feature, phase-matched grids stack the kicks. 
-(Re-analyze a track to apply this — cached grids from an
-older analysis keep their old fit until you do.)
+### Beat‑matching (sync)
+Press a deck's **SYNC** (below its **Q**) to make it follow the other:
 
-**ALIGN (manual phase align).** A one-shot kick cross-correlation, for mixes
-you've beatmatched by hand instead of latching. Press it and, on deck
-A's next beat, it correlates both decks' low end and nudges deck B's playhead
-onto A's kick — a single quantize-style position move, not a continuous trim, and
-never a grid edit. Press again before it fires to cancel; it lights while armed.
-It does nothing if there's no confident kick on that beat (a breakdown). Because
-a sync latch already holds phase continuously, the button is **disabled whenever
-a sync lock is latched** — it's only for hand-beatmatched mixes. Both decks must
-be analyzed and playing.
+- Deck **B**'s SYNC → B follows A (A is master).
+- Deck **A**'s SYNC → A follows B (B is master).
 
-Sync needs both decks loaded *and* analyzed; if a latch pops back out, the
-analysis isn't ready yet.
+Sync matches the follower's tempo and holds its beat phase continuously. If the
+kicks still flam slightly, tap **STEP** on the follower to nudge the phase (a
+temporary, unsaved correction). The two SYNC buttons are mutually exclusive.
 
-**Trigger quantize.** Starting the latched follower (PLAY) or jumping it to
-a hot cue pre-aligns its position to the master's beat phase *before* the
-audio runs — a nearest-phase jump of at most half a beat — so the first
-audible beat is already locked rather than corrected a moment later.
+### Transitioning
+You have two tools, usable together or separately:
 
-**Quantize (Q).** Per-deck toggle; snaps hot-cue placement and beat-loop
-starts to the grid. It doesn't affect sync itself.
+- **TEMPO TRANSITION** — glides the *master* deck's tempo until the follower
+  sits at its own natural tempo, beat‑locked the whole way. Use it during the
+  blend so the floor drifts onto the incoming track's tempo.
+- **FADE** — blends the decks on the channel faders over the **FADE bars**
+  setting, in the **A>B / A<B** direction. Equal‑power, so there's no loudness
+  dip. It starts on the outgoing deck's next bar line.
 
-## The problem these tools solve
+Tick **LOW / MID / HI** before a transition to also swap those EQ bands across
+(e.g. a hands‑free bass swap). Volume always swaps; the EQ toggles are extra.
+The **AUTOFADE mode** box can start the FADE automatically with, or after, the
+tempo transition. See **[beatmatch.md](beatmatch.md)** for the full detail.
 
-When B follows A, B's tempo is bent away from its native value — say B is a
-128 BPM track running at +3.2% to match A. After you mix over and fade A out,
-B is playing alone at the wrong tempo. Snapping the fader back to 0% would be
-an audible pitch lurch. Tempo drift of about 1% per second, however, is
-essentially inaudible — so both tools below move tempo at exactly that rate.
+> There is **no crossfader** — blending is done on the per‑deck channel (VOL)
+> faders. Mix manually by riding the two VOL faders, or let FADE do it.
 
-### Tempo handover (the planned way — do it *during* the blend)
+### Looping
+Use the **LOOP row** (IN / OUT / EXIT / ½ / X2) for manual loops, or **BEAT
+LOOP** pad mode for instant beat‑length loops. With **Q** on, loop points snap
+to the beat. Loop markers and the looped region are drawn on the sliding
+waveform.
 
-While the sync latch is engaged, the **TEMPO HANDOVER** button is enabled.
-Press it while both tracks are still in the mix:
+### Effects
+Each deck has a **Beat FX** slot (its FX row) for a post‑fader, beat‑synced
+effect, and a **COLOR** filter/effect knob per channel in the mixer (pre‑fader,
+DJM‑style). Both lock to the track's tempo.
 
-- The *master's* tempo fader glides toward the point where the follower sits
-  at exactly 0%. The button is tinted with the master deck's colour while the
-  glide runs — that's whose tempo is moving.
-- Sync lock drags the follower along the whole way, beat-locked, so the mix
-  stays tight while the floor drifts to the incoming track's native tempo.
-- When the follower reaches 0% the button un-lights. Fade the master out,
-  release the latch — done. Nothing needs resetting.
+---
 
-Press the button again to cancel mid-glide. The handover also cancels itself
-if you release the latch or flip the sync direction, and if the target is
-beyond the master's ±16% fader range it glides as far as it can and stops.
+## 4. Function reference
 
-### The volume blend and band swap (VOL always · LOW · MID · HI)
+### Deck (one per side)
 
-There is **no crossfader** — blending between the decks is done on the
-per-deck **channel (VOL) faders**. A handover or fade always swaps the
-**volume** across (outgoing down, incoming up), using an *equal-power*
-cos/sin curve so the combined loudness stays flat through the middle instead
-of dipping. The three toggles to the right of **ALIGN** — **LOW · MID · HI** —
-add optional EQ swaps on top (a hands-free bass transition, for example);
-there is no VOL toggle because volume always swaps.
+| Control | What it does |
+| --- | --- |
+| **Waveform overview** | Whole‑track view; click to seek. Coloured by frequency energy; cue markers shown. |
+| **▶ / ⏸ (PLAY)** | Play / pause. **Shift‑click** starts *both* decks together. |
+| **CUE** | Paused away from the cue: sets the cue here. Paused at the cue: plays while held (audition), snaps back on release. Playing: stops and returns to the cue. |
+| **« » (NUDGE)** | Hold to pitch‑bend slower / faster (temporary; releases back to tempo). Disabled on a sync follower. |
+| **\|◄ ►\| (STEP)** | Nudge the playhead a hair (hold to repeat; **shift** = finer). On a sync follower it slips the phase instead. |
+| **VOL fader** | This deck's channel level (the deck‑to‑deck blend control). |
+| **TEMPO fader** | ±16% tempo (and pitch — there's no keylock). Double‑click or **RESET** to return to 0%. |
+| **RESET** | Tempo back to 0%; on a playing deck it *glides* home, on a stopped deck it snaps. |
+| **PFL** | Headphone‑cue placeholder (not routed yet). |
+| **Read‑outs** | Track title, effective BPM, tempo %, and elapsed / total time. |
+| **Q** | Quantise toggle — snaps cues and loop points to the beat. |
+| **SYNC** | (Below Q.) Engage this deck as the sync follower; lit in the deck colour. Also sets the FADE direction. |
 
-- Check **LOW** (and/or MID/HI) *before* starting the handover/fade.
-- **When the HANDOVER or FADE starts (say A>B):** the incoming deck's (B)
-  volume — and any checked EQ bands — are cut, so it slots in under the
-  outgoing one without clashing. (Pressing SYNC no longer cuts anything; the
-  cut happens only when the transition begins, so you can cue the incoming
-  deck after syncing.)
-- **As it runs:** the outgoing deck's (A) volume/bands glide *down* to killed
-  while the incoming deck's (B) glide *up* to unity (full fader / EQ centre),
-  over the number of **bars in the FADE dropdown** (at the outgoing tempo). By
-  the time it lands, the decks have swapped.
+### Performance pads (8 per deck) + mode row
 
-The glide runs on its own timed duration, *not* the tempo distance — two
-similar-BPM tracks barely move the tempo, so tying the swap to that would snap it
-instantly; the bars setting gives it a smooth, musical length. The
-knobs/faders physically move as it runs, so you can see and grab them. If you
-cancel/release *before* it completes, the swap is undone (the bands return to
-where they were); once it lands it's the new mix state.
+Pick a mode with the row above the pads; **shift‑click a pad clears** it.
 
-### Fading out the old deck
+| Mode | Pads do |
+| --- | --- |
+| **HOT CUE** | Set / jump to 8 hot cues. |
+| **BEAT LOOP** | Toggle beat‑length loops (⅛ … 16 beats). |
+| **SAMPLER** | Trigger the 8 shared sampler slots. |
+| **BEAT JUMP** | Jump backward / forward by whole beats (keeps phase). |
 
-The **FADE** button blends the decks on the channel faders over the number
-of bars chosen in the dropdown beside TEMPO HANDOVER (2/4/8/16 bars,
-measured at the outgoing deck's tempo), and is lit in the outgoing deck's
-colour while armed or running. The **direction** is set by the `A>B`/`A<B`
-toggle next to FADE (A>B fades deck A out to B; A<B fades B out to A) — it
-works with or without sync, so a plain bar-quantized blend between two
-unsynced tracks is one press. The fade doesn't begin the instant it's
-triggered — it waits for the outgoing deck's **next bar line**, so the blend
-always starts on a phrase boundary (set the downbeat with the grid buttons if
-the bar lines are off). Triggering with no beatgrid or a stopped deck starts
-immediately. When the blend lands — and the tempo handover isn't still
-running — the sync latch releases by itself: the transition is finished. Press
-FADE again to cancel.
+### Loop row
 
-Press it whenever the music says so: during the tempo glide, after it, or
-without any handover at all.
+| Button | Action |
+| --- | --- |
+| **LOOP IN** | Set the loop in‑point at the playhead (beat‑snapped when Q is on); the button lights while armed. |
+| **LOOP OUT** | Set the out‑point and start looping. |
+| **EXIT** | Leave the loop and keep playing; lit while a loop runs. |
+| **½ / X2** | Halve / double the running loop length. |
 
-**Autofade modes.** The selector next to FADE chains the fade to the
-handover automatically:
+### Beat FX row (per deck, post‑fader)
 
-- **AUTOFADE OFF** — fades only happen when you press FADE yourself.
-- **FADE WITH TEMPO** (the default) — the fade starts the moment you press
-  TEMPO HANDOVER, so tempo drift and fade run together: the shortest
-  transition.
-- **FADE AFTER TEMPO** — the fade starts when the tempo glide lands: the
-  tempo settles first, then the blend resolves.
+- **Effect selector:** PHASER, ECHO, REVERB, FLANGER, CHORUS, DISTORT, WAH,
+  TREMOLO, PING‑PONG.
+- **Beats:** effect time in beats (⅛, ¼, ½, 1, 2, 4).
+- **Depth slider** and **ON** toggle.
 
-Whichever finishes the transition last (fade or handover) releases the
-latch, so a long tempo glide is never cut short by the fade arriving first.
+### Mixer (centre, per channel)
 
-### Glide-on-RESET (the cleanup way — after the fade)
+Five knobs top to bottom — **GAIN**, **HI**, **MID**, **LOW**, **COLOR** — each
+double‑clickable to reset. Below COLOR is its **effect type** selector:
+FILTER, REVERB, DUAL DELAY, NOISE, GATER. The COLOR knob is centre‑off: FILTER
+sweeps low‑pass one way / high‑pass the other; the others ramp up from centre in
+either direction.
 
-If you didn't do a handover: fade A out, release the latch (B keeps its bent
-tempo — releasing never jumps), then press **RESET** on deck B. Instead of
-snapping, the tempo glides back to 0% at 1%/sec while the BPM read-out counts
-down; the RESET button is lit in the deck's accent colour during the glide.
+### Sliding (stacked) waveform + grid editing
 
-- Press RESET again mid-glide → snap to 0% immediately.
-- Shift-click RESET → always an instant snap.
-- Grab the tempo fader → glide cancels, you're in manual control.
-- RESET on a stopped deck snaps instantly (nothing to hear).
+- Both decks scroll past a centre playhead with **beat ticks**, **bar numbers**,
+  a **phrase band**, and **loop markers**.
+- **Zoom + / −** change the visible time span.
+- **Double‑click a phrase** to relabel / split / merge a section.
+- **Grid edit buttons** (per deck, paused only): `||<` `>||` move the beat
+  markers earlier / later (10 ms/step; **shift** moves the downbeat by a whole
+  beat); `||-` `||+` tighten / widen the grid spacing (±0.05 BPM). Use these to
+  line a tick up with a kick.
 
-Sync always outranks a glide: if a latch engages the deck as follower, any
-running glide is cancelled.
+### Transition row (centre)
 
-## The full workflow, end to end
+| Control | What it does |
+| --- | --- |
+| **FADE bars** | Length of the FADE / band swap: 2 / 4 / 8 / 16 bars. |
+| **TEMPO TRANSITION** | Glide the master's tempo so the follower ends at its native 0%, beat‑locked. |
+| **AUTOFADE mode** | OFF / FADE WITH TEMPO / FADE AFTER TEMPO — when the FADE auto‑starts. |
+| **FADE** | Blend the decks on the channel faders over the chosen bars, in the A>B/A<B direction. |
+| **A>B / A<B** | The handover direction (which deck fades out). Follows the last SYNC press; click to flip. |
+| **ALIGN** | One‑shot kick cross‑correlation for a hand‑beatmatched mix (not while sync is latched). |
+| **LOW / MID / HI** | Also swap these EQ bands during the transition (volume always swaps). |
 
-1. Deck A is live. Load the next track on deck B, cue it up (quantized hot
-   cues help land on a downbeat).
-2. Press the right **SYNC** (B follows A) — B's tempo and phase lock to A.
-   Check the stacked waveform: the beat ticks of both lanes should line up.
-3. Start B, bring its channel up, blend with the EQs (e.g. swap basses with
-   the LOW knobs).
-4. Set the FADE direction to `A>B`. While both are audible, press **TEMPO
-   HANDOVER** and let the mix drift to B's native tempo. With an autofade mode
-   selected you're done — the volume eases over to B on the channel faders
-   (with the tempo glide or after it, your choice) and the latch releases on
-   its own.
-5. Otherwise: press **FADE** when the moment feels right (or ride the deck
-   VOL faders by hand), and the latch releases when the fade lands.
-6. If you skipped step 4: press **RESET** on B and let it glide home.
+### Playlist (library)
 
-## Numbers reference
+Drag in files/folders; each row has a title, length, BPM, and **A / B** load
+buttons. **NEW / LOAD / SAVE** manage playlist files. Right‑click a row for
+remove / re‑analyse. Amber rows need re‑analysis.
+
+---
+
+## 5. MIDI control
+
+Open **MIDI** (bottom bar) to use a controller:
+
+1. Tick your device under **MIDI INPUTS** (use **RESCAN** if it's not listed).
+2. For each function, click **LEARN** then move/press the control on your
+   hardware to bind it. **X** clears a binding.
+3. **SAVE / LOAD** store and recall a mapping profile per controller (LOAD
+   replaces the bindings and keeps working across restarts).
+
+Mappable per deck: play, cue, sync, tempo, channel volume, EQ hi/mid/low,
+colour, jog wheel, the 8 pads, loop in/out/exit/halve/double, beat‑FX on, and
+the four pad‑mode selectors. The jog wheel bends pitch while playing and seeks
+while paused. (There is no scratch engine, and the crossfader entry is unused.)
+
+---
+
+## 6. What's saved
+
+GoDJ saves automatically to your user app‑data folder and restores on launch:
+the playlist with hot cues and main cues, sampler slot assignments, track
+analyses, the audio device setup, and your MIDI mapping. Audio device and buffer
+size are chosen under **AUDIO** (smaller buffers = lower latency).
+
+---
+
+## 7. Quick reference (numbers)
 
 | Thing | Value |
 | --- | --- |
-| Tempo fader range | ±16% |
-| Glide / handover rate | 1% per second |
-| Fade length | 2/4/8/16 bars at the outgoing deck's tempo (~12 s fallback without BPM) |
+| Tempo range | ±16% (no keylock) |
+| Sync phase‑hold trim | ±1.5% max |
 | Nudge bend | ~4% while held |
-| Sync-lock rate trim | ±1.5% max |
-| Phase snap threshold | 0.1 beat (beyond this the follower jumps, not chases) |
-| Grid kick-anchor | sample-resolution kick onset + continuous BPM least-squares fit over all beats (150 Hz low-pass) |
-| ALIGN search | onset cross-correlation, ±0.45 beat, ~1.5 ms resolution (manual one-shot only) |
-| Grid shift step | 10 ms per press |
-| Playhead step | 10 ms per press (2 ms with shift) |
+| STEP | 10 ms (2 ms with shift) |
+| Grid shift | 10 ms per step |
+| Grid spacing | ±0.05 BPM per step |
+| FADE / transition length | 2 / 4 / 8 / 16 bars |
+| Beat loops | ⅛ to 16 beats |
+| Performance pads / hot cues / sampler slots | 8 each |
+
+For the sync, tempo‑handover and band‑swap internals, see
+**[beatmatch.md](beatmatch.md)**.
