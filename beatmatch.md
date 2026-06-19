@@ -17,8 +17,8 @@ saved and survive reloads.
 per deck):
 
 - `<BEAT` / `BEAT>` slide all the beat markers earlier/later relative to
-  the waveform, 10 ms per step (hold to repeat) — watch the zoomed view and
-  put a tick right on the kick. **Shift-click** jumps the grid a whole beat
+  the waveform, one waveform bin per step (~2 ms; hold to repeat) — watch the
+  zoomed view and put a tick right on the kick. **Shift-click** jumps the grid a whole beat
   instead: no tick visibly moves, but the *downbeat* re-anchors, fixing
   bar lines that land mid-phrase (e.g. after leading silence).
 - `-` / `+` tighten/widen the grid *spacing* by trimming the analyzed BPM
@@ -135,20 +135,23 @@ essentially inaudible — so both tools below move tempo at exactly that rate.
 
 ### Tempo handover (the planned way — do it *during* the blend)
 
-While the sync latch is engaged, the **TEMPO HANDOVER** button is enabled.
-Press it while both tracks are still in the mix:
+The transition is driven by two arming toggles — **TEMPO** and **FADE** — and
+a single **TRANSITION** button that runs whichever are lit. To do a tempo
+handover, arm **TEMPO** (the toggle needs a sync latch to be runnable — it
+greys TRANSITION out until one is engaged), then press **TRANSITION** while
+both tracks are still in the mix:
 
 - The *master's* tempo fader glides toward the point where the follower sits
-  at exactly 0%. The button is tinted with the master deck's colour while the
-  glide runs — that's whose tempo is moving.
+  at exactly 0%. The TRANSITION button is tinted with the master deck's colour
+  while the glide runs — that's whose tempo is moving.
 - Sync lock drags the follower along the whole way, beat-locked, so the mix
   stays tight while the floor drifts to the incoming track's native tempo.
 - When the follower reaches 0% the button un-lights. Fade the master out,
   release the latch — done. Nothing needs resetting.
 
-Press the button again to cancel mid-glide. The handover also cancels itself
-if you release the latch or flip the sync direction, and if the target is
-beyond the master's ±16% fader range it glides as far as it can and stops.
+Press **TRANSITION** again to cancel mid-glide. The handover also cancels
+itself if you release the latch or flip the sync direction, and if the target
+is beyond the master's ±16% fader range it glides as far as it can and stops.
 
 ### The volume blend and band swap (VOL always · LOW · MID · HI)
 
@@ -180,34 +183,33 @@ where they were); once it lands it's the new mix state.
 
 ### Fading out the old deck
 
-The **FADE** button blends the decks on the channel faders over the number
-of bars chosen in the dropdown beside TEMPO HANDOVER (2/4/8/16 bars,
-measured at the outgoing deck's tempo), and is lit in the outgoing deck's
-colour while armed or running. The **direction** is set by the `A>B`/`A<B`
-toggle next to FADE (A>B fades deck A out to B; A<B fades B out to A) — it
-works with or without sync, so a plain bar-quantized blend between two
-unsynced tracks is one press. The fade doesn't begin the instant it's
-triggered — it waits for the outgoing deck's **next bar line**, so the blend
-always starts on a phrase boundary (set the downbeat with the grid buttons if
-the bar lines are off). Triggering with no beatgrid or a stopped deck starts
-immediately. When the blend lands — and the tempo handover isn't still
-running — the sync latch releases by itself: the transition is finished. Press
-FADE again to cancel.
+Arming the **FADE** toggle and pressing **TRANSITION** blends the decks on the
+channel faders over the number of bars chosen in the dropdown beside the
+toggles (2/4/8/16 bars, measured at the outgoing deck's tempo); the TRANSITION
+button is lit in the outgoing deck's colour while armed or running. The
+**direction** is set by the `A>B`/`A<B` toggle (A>B fades deck A out to B; A<B
+fades B out to A) — a fade works with or without sync, so a plain
+bar-quantized blend between two unsynced tracks is one press of TRANSITION
+with only FADE armed. The fade doesn't begin the instant it's triggered — it
+waits for the outgoing deck's **next bar line**, so the blend always starts on
+a phrase boundary (set the downbeat with the grid buttons if the bar lines are
+off). Triggering with no beatgrid or a stopped deck starts immediately. When
+the blend lands — and the tempo handover isn't still running — the sync latch
+releases by itself: the transition is finished. Press **TRANSITION** again to
+cancel.
 
-Press it whenever the music says so: during the tempo glide, after it, or
+Run it whenever the music says so: during the tempo glide, after it, or
 without any handover at all.
 
-**Autofade modes.** The selector next to FADE chains the fade to the
-handover automatically:
+**The TEMPO / FADE toggles + TRANSITION.** Instead of separate action buttons,
+two arming toggles decide what one **TRANSITION** press does:
 
-- **AUTOFADE OFF** — fades only happen when you press FADE yourself.
-- **FADE WITH TEMPO** (the default) — the fade starts the moment you press
-  TEMPO HANDOVER, so tempo drift and fade run together: the shortest
-  transition.
-- **FADE AFTER TEMPO** — the fade starts when the tempo glide lands: the
-  tempo settles first, then the blend resolves.
+- **TEMPO** armed only — tempo glide, no fade (needs a sync latch).
+- **FADE** armed only — the channel-fader blend, no tempo glide.
+- **TEMPO + FADE** both armed — the tempo glide and the blend run together,
+  the shortest hands-free transition.
 
-Whichever finishes the transition last (fade or handover) releases the
+Whichever finishes the transition last (fade or tempo glide) releases the
 latch, so a long tempo glide is never cut short by the fade arriving first.
 
 ### Glide-on-RESET (the cleanup way — after the fade)
@@ -233,13 +235,14 @@ running glide is cancelled.
    Check the stacked waveform: the beat ticks of both lanes should line up.
 3. Start B, bring its channel up, blend with the EQs (e.g. swap basses with
    the LOW knobs).
-4. Set the FADE direction to `A>B`. While both are audible, press **TEMPO
-   HANDOVER** and let the mix drift to B's native tempo. With an autofade mode
-   selected you're done — the volume eases over to B on the channel faders
-   (with the tempo glide or after it, your choice) and the latch releases on
-   its own.
-5. Otherwise: press **FADE** when the moment feels right (or ride the deck
-   VOL faders by hand), and the latch releases when the fade lands.
+4. Set the direction to `A>B`. While both are audible, arm **TEMPO** (and
+   **FADE** too if you want the volume to ease over in the same press), then
+   press **TRANSITION** and let the mix drift to B's native tempo. With FADE
+   armed you're done — the volume eases over to B on the channel faders (with
+   the tempo glide or after it, your choice) and the latch releases on its own.
+5. Otherwise: arm **FADE** only and press **TRANSITION** when the moment feels
+   right (or ride the deck VOL faders by hand), and the latch releases when the
+   fade lands.
 6. If you skipped step 4: press **RESET** on B and let it glide home.
 
 ## Numbers reference

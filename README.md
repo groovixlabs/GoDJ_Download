@@ -48,10 +48,11 @@ That's a full mix. Everything below is detail and refinement.
  │   (teal)      │   decks) + zoom + grid     │   (orange)    │
  │               │   edit buttons             │               │
  ├───────────────┴───────────────────────────┴───────────────┤
- │   MIXER (centre): GAIN · HI · MID · LOW · COLOR per deck   │
+ │   MIXER (centre): GAIN · HI · MID · LOW · COLOR + VOL      │
+ │   fader per deck (the two VOL faders meet in the middle)  │
  ├───────────────────────────────────────────────────────────┤
- │   TRANSITION ROW: FADE bars · TEMPO TRANSITION · AUTOFADE  │
- │   mode · FADE · A>B · ALIGN · LOW MID HI                   │
+ │   TRANSITION ROW: FADE bars · TEMPO · FADE · TRANSITION ·  │
+ │   A>B · ALIGN · LOW MID HI                                 │
  ├───────────────────────────────────────────────────────────┤
  │   PLAYLIST (library)                                       │
  ├───────────────────────────────────────────────────────────┤
@@ -70,7 +71,10 @@ That's a full mix. Everything below is detail and refinement.
 
 ### Building the library
 Drop files or folders onto the playlist. Tracks are analysed on a background
-thread (BPM, beat grid, a colour waveform, and rough phrase sections). Use the
+thread (BPM, beat grid, **musical key**, a colour waveform, and rough phrase
+sections). The key is shown both as a name (e.g. `Am`) and a Camelot code
+(e.g. `8A`) — tracks whose Camelot numbers are equal or adjacent (and same
+letter) mix harmonically. Use the
 playlist's **NEW / LOAD / SAVE** buttons to start a fresh list or swap it with a
 saved one. Tracks shown in **amber** were analysed by an older version — re‑run
 analysis on them when convenient.
@@ -91,19 +95,20 @@ kicks still flam slightly, tap **STEP** on the follower to nudge the phase (a
 temporary, unsaved correction). The two SYNC buttons are mutually exclusive.
 
 ### Transitioning
-You have two tools, usable together or separately:
+Two arming toggles decide what the transition does, then one button runs it:
 
-- **TEMPO TRANSITION** — glides the *master* deck's tempo until the follower
-  sits at its own natural tempo, beat‑locked the whole way. Use it during the
-  blend so the floor drifts onto the incoming track's tempo.
+- **TEMPO** — glides the *master* deck's tempo until the follower sits at its
+  own natural tempo, beat‑locked the whole way, so the floor drifts onto the
+  incoming track's tempo. Needs a sync latch.
 - **FADE** — blends the decks on the channel faders over the **FADE bars**
   setting, in the **A>B / A<B** direction. Equal‑power, so there's no loudness
   dip. It starts on the outgoing deck's next bar line.
+- **TRANSITION** — runs whichever toggles are armed (arm both to glide the
+  tempo and blend together in one press). Press again to cancel.
 
 Tick **LOW / MID / HI** before a transition to also swap those EQ bands across
 (e.g. a hands‑free bass swap). Volume always swaps; the EQ toggles are extra.
-The **AUTOFADE mode** box can start the FADE automatically with, or after, the
-tempo transition. See **[beatmatch.md](beatmatch.md)** for the full detail.
+See **[beatmatch.md](beatmatch.md)** for the full detail.
 
 > There is **no crossfader** — blending is done on the per‑deck channel (VOL)
 > faders. Mix manually by riding the two VOL faders, or let FADE do it.
@@ -132,11 +137,11 @@ DJM‑style). Both lock to the track's tempo.
 | **CUE** | Paused away from the cue: sets the cue here. Paused at the cue: plays while held (audition), snaps back on release. Playing: stops and returns to the cue. |
 | **« » (NUDGE)** | Hold to pitch‑bend slower / faster (temporary; releases back to tempo). Disabled on a sync follower. |
 | **\|◄ ►\| (STEP)** | Nudge the playhead a hair (hold to repeat; **shift** = finer). On a sync follower it slips the phase instead. |
-| **VOL fader** | This deck's channel level (the deck‑to‑deck blend control). |
-| **TEMPO fader** | ±16% tempo (and pitch — there's no keylock). Double‑click or **RESET** to return to 0%. |
-| **RESET** | Tempo back to 0%; on a playing deck it *glides* home, on a stopped deck it snaps. |
-| **PFL** | Headphone‑cue placeholder (not routed yet). |
-| **Read‑outs** | Track title, effective BPM, tempo %, and elapsed / total time. |
+| **VOL fader** | This deck's channel level (the deck‑to‑deck blend control). Lives in the central **mixer** strip; the two decks' VOL faders meet in the middle. |
+| **TEMPO fader** | ±16% tempo (and pitch — there's no keylock), on the deck. Double‑click or **RESET** to return to 0%. |
+| **RESET** | Tempo back to 0% (glides home on a playing deck, snaps when stopped); also resets this deck's mixer **VOLUME** to full, **EQ** to 0 dB, and **COLOR** to centre. |
+| **PFL** | Headphone‑cue placeholder (not routed yet). In the mixer strip, under the VOL fader. |
+| **Read‑outs** | Track title, musical **key** (name + Camelot), effective BPM, tempo %, and elapsed / total time. |
 | **Q** | Quantise toggle — snaps cues and loop points to the beat. |
 | **SYNC** | (Below Q.) Engage this deck as the sync follower; lit in the deck colour. Also sets the FADE direction. |
 
@@ -173,7 +178,12 @@ Five knobs top to bottom — **GAIN**, **HI**, **MID**, **LOW**, **COLOR** — e
 double‑clickable to reset. Below COLOR is its **effect type** selector:
 FILTER, REVERB, DUAL DELAY, NOISE, GATER. The COLOR knob is centre‑off: FILTER
 sweeps low‑pass one way / high‑pass the other; the others ramp up from centre in
-either direction.
+either direction. Beside each channel's knobs is its **VOL** fader (the
+deck‑to‑deck blend control) with a **PFL** button under it; the two channels'
+VOL faders sit together in the centre. A thin **level meter** runs alongside
+each VOL fader, showing that channel's **pre‑fader** level (after GAIN/EQ,
+before the fader) — green/amber/red, so you can set gain before bringing the
+fader up.
 
 ### Sliding (stacked) waveform + grid editing
 
@@ -191,18 +201,19 @@ either direction.
 | Control | What it does |
 | --- | --- |
 | **FADE bars** | Length of the FADE / band swap: 2 / 4 / 8 / 16 bars. |
-| **TEMPO TRANSITION** | Glide the master's tempo so the follower ends at its native 0%, beat‑locked. |
-| **AUTOFADE mode** | OFF / FADE WITH TEMPO / FADE AFTER TEMPO — when the FADE auto‑starts. |
-| **FADE** | Blend the decks on the channel faders over the chosen bars, in the A>B/A<B direction. |
+| **TEMPO** | Arm the tempo glide (master's tempo glides so the follower ends at its native 0%, beat‑locked). Needs a sync latch. |
+| **FADE** | Arm the channel‑fader blend over the chosen bars, in the A>B/A<B direction. |
+| **TRANSITION** | Run the transition using whichever of TEMPO / FADE are armed (both = glide and blend together). Click again to cancel. |
 | **A>B / A<B** | The handover direction (which deck fades out). Follows the last SYNC press; click to flip. |
 | **ALIGN** | One‑shot kick cross‑correlation for a hand‑beatmatched mix (not while sync is latched). |
 | **LOW / MID / HI** | Also swap these EQ bands during the transition (volume always swaps). |
 
 ### Playlist (library)
 
-Drag in files/folders; each row has a title, length, BPM, and **A / B** load
-buttons. **NEW / LOAD / SAVE** manage playlist files. Right‑click a row for
-remove / re‑analyse. Amber rows need re‑analysis.
+Drag in files/folders; each row has a title, length, BPM, **Key** (name +
+Camelot, sortable), and **A / B** load buttons. **NEW / LOAD / SAVE** manage
+playlist files. Right‑click a row for remove / re‑analyse. Amber rows need
+re‑analysis (e.g. tracks analysed before key detection existed).
 
 ---
 
